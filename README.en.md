@@ -6,6 +6,8 @@
 
 Read Chinese history and world history on the same timeline.
 
+> 平行历史 — the Chinese name translates literally as "parallel histories".
+
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-yansheng836.github.io-2c3e50?style=flat-square)](https://yansheng836.github.io/parallel-histories/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-c0392b?style=flat-square)](LICENSE)
 [![Single File](https://img.shields.io/badge/Single%20File-HTML-2471a3?style=flat-square)](#)
@@ -27,7 +29,7 @@ Read Chinese history and world history on the same timeline.
 
 ## What is this
 
-A **single-file, zero-dependency** static web page. A vertical timeline runs down the center: **Chinese events on the left, Western / world events on the right**, so events from the same period sit side by side for comparison.
+**Parallel Histories** is a **single-file, zero-dependency** static web page. A vertical timeline runs down the center: **Chinese events on the left, Western / world events on the right**, so events from the same period sit side by side for comparison.
 
 It spans from **c. 2070 BCE (the founding of the Xia dynasty)** all the way to the **present day**, covering:
 
