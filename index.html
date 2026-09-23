@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>中外历史对照时间轴（上下五千年）</title>
+<style>
+  :root{
+    --cn:#c0392b; --cn-bg:#fdf0ee;
+    --west:#2471a3; --west-bg:#eaf3fa;
+    --link:#8e44ad;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"Microsoft YaHei","PingFang SC",sans-serif;background:#f7f5f0;color:#2c3e50}
+
+  header{
+    text-align:center;padding:28px 16px 20px;
+    background:linear-gradient(135deg,#2c3e50,#34495e);color:#fff;
+  }
+  header h1{font-size:22px;letter-spacing:3px}
+  header p{margin-top:6px;font-size:12px;opacity:.75}
+
+  .legend{
+    display:flex;justify-content:center;gap:20px;padding:12px;
+    font-size:12px;flex-wrap:wrap;
+  }
+  .legend span{display:inline-flex;align-items:center;gap:5px}
+  .dot{width:10px;height:10px;border-radius:50%}
+
+  .timeline{position:relative;max-width:1200px;margin:0 auto 60px;padding:10px 0}
+  .axis{
+    position:absolute;left:50%;top:0;bottom:0;width:4px;
+    transform:translateX(-50%);background:linear-gradient(#bdc3c7,#7f8c8d);
+    border-radius:2px;
+  }
+
+  /* ★ 分期色带：独占两侧 44px 凹槽，竖排文字垂直居中，绝不与卡片重叠 */
+  .era-cn,.era-west{
+    position:absolute;top:0;height:60px;width:44px;
+    border-radius:10px;z-index:1;
+    display:flex;align-items:center;justify-content:center;
+    writing-mode:vertical-lr;text-orientation:mixed;
+    font-size:12px;font-weight:bold;letter-spacing:4px;line-height:1.2;
+    text-align:center;
+  }
+  .era-cn{left:0;background:#f6cfc9;color:#8c2f23;border:1px solid #eab8b0}
+  .era-west{right:0;background:#cfe3f4;color:#1b4f72;border:1px solid #aed6f1}
+
+  .tick{position:relative;z-index:2;display:flex;justify-content:center;margin:26px 0}
+  .tick .year{
+    background:#2c3e50;color:#fff;padding:5px 16px;border-radius:20px;
+    font-weight:bold;font-size:14px;box-shadow:0 2px 6px rgba(0,0,0,.25);
+  }
+  .tick .era-tag{
+    display:none;position:absolute;top:50%;transform:translateY(-50%);
+    font-size:11px;color:#95a5a6;white-space:nowrap;
+  }
+  .tick .era-tag.l{right:calc(50% + 70px)}
+  .tick .era-tag.r{left:calc(50% + 70px)}
+
+  /* ★ row：左右留出 48px 色带凹槽，卡片内移，flex 布局自动撑高 */
+  .row{
+    position:relative;display:flex;justify-content:space-between;
+    align-items:flex-start;margin:20px 0;padding:0 48px;
+  }
+  .card{
+    position:relative;width:calc(50% - 76px);padding:12px 14px;
+    border-radius:10px;font-size:14px;line-height:1.7;
+    box-shadow:0 3px 10px rgba(0,0,0,.08);
+  }
+  .card h3{font-size:15px;margin-bottom:4px}
+  .card h3 + h3{margin-top:8px}
+  .card .y{font-size:12px;opacity:.75;font-weight:normal}
+  .card .fig{font-size:12px;color:#6c3483;margin:2px 0}
+  .card .fig::before{content:"👤 ";opacity:.8}
+  .card.cn{background:var(--cn-bg);border-left:4px solid var(--cn)}
+  .card.cn h3{color:var(--cn)}
+  .card.west{background:var(--west-bg);border-right:4px solid var(--west);text-align:right}
+  .card.west h3{color:var(--west)}
+  /* 连接线：卡片边缘 → 中轴，28px 正好触轴 */
+  .card::after{
+    content:"";position:absolute;top:24px;height:2px;width:28px;background:#bdc3c7;
+  }
+  .card.cn::after{right:-28px}
+  .card.west::after{left:-28px}
+
+  .link-note{
+    position:relative;z-index:2;max-width:560px;margin:28px auto;
+    padding:0 16px;
+  }
+  .link-note .inner{
+    background:#f5eef8;border:1px dashed var(--link);border-radius:10px;
+    padding:12px 18px;font-size:13px;color:#6c3483;line-height:1.8;text-align:center;
+  }
+  .link-note b{color:var(--link)}
+
+  footer{text-align:center;padding:20px;font-size:12px;color:#95a5a6}
+
+  /* ═══════════════ 手机端适配 ═══════════════ */
+  @media (max-width:768px){
+    .timeline{padding:0 14px}
+    .axis{left:14px;transform:none;width:3px}
+
+    /* 色带：变为文档流横条，跟随年代位置出现 */
+    .era-cn,.era-west{
+      writing-mode:horizontal-tb;letter-spacing:2px;
+      position:relative;width:auto;top:auto!important;height:auto!important;
+      margin:12px 0 4px;padding:6px 12px;font-size:12px;border-radius:6px;
+      display:block;text-align:left;
+    }
+    .era-west{display:none}
+
+    .tick{justify-content:flex-start;padding-left:0;margin:20px 0 8px}
+    .tick .year{font-size:13px;padding:4px 12px}
+    .tick .era-tag{
+      display:block;position:static;transform:none;
+      margin-left:10px;font-size:11px;
+    }
+
+    .row{display:block;margin:14px 0;padding:0 0 0 34px}
+    .card{
+      position:relative;width:100%;margin-bottom:12px;
+      font-size:13px;line-height:1.65;padding:11px 13px;
+    }
+    .card h3{font-size:14px}
+    .card.west{text-align:left}
+    .card::after{display:none}
+    .card::before{
+      content:"";position:absolute;top:20px;left:-8px;
+      border:6px solid transparent;
+    }
+    .card.cn::before{border-left-color:var(--cn)}
+    .card.west::before{border-left-color:var(--west)}
+
+    .card .node{
+      position:absolute;left:-24px;top:20px;width:10px;height:10px;
+      border-radius:50%;z-index:2;
+    }
+    .card.cn .node{background:var(--cn)}
+    .card.west .node{background:var(--west)}
+
+    .link-note .inner{font-size:12px;text-align:left}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>中外历史对照时间轴</h1>
+  <p>中国上下五千年 ｜ 左·中国 · 中·时间 · 右·西方 ｜ 延伸至当代</p>
+</header>
+
+<div class="legend">
+  <span><i class="dot" style="background:var(--cn)"></i>中国大事</span>
+  <span><i class="dot" style="background:var(--west)"></i>西方大事</span>
+  <span><i class="dot" style="background:var(--link)"></i>中外联动</span>
+</div>
+
+<div class="timeline">
+  <div class="axis"></div>
+
+  <!-- ═══════════ 上古三代 ═══════════ -->
+  <div class="era-cn" data-from="#t-xia" data-to="#t-zhou">夏商·王朝之始</div>
+  <div class="era-west" data-from="#t-xia" data-to="#t-sui">上古文明·古希腊罗马</div>
+
+  <div class="tick" id="t-xia"><span class="year">约前2070年</span><span class="era-tag l">夏朝建立</span></div>
+  <div class="row">
+    <div class="card cn"><i class="node"></i>
+      <h3>夏朝 <span class="y">（约前2070—前1600）</span></h3>
+      <div class="fig">大禹治水，禹传启"家天下"；夏桀暴政亡国</div>
+      中国王朝之始，世袭制取代禅让制。</div>
+    <div class="card west"><i class="node"></i>
+      <h3>爱琴文明·克里特迈锡尼 <span class="y">（约前2000—前1200）</span></h3>
+      米诺斯王宫、特洛伊战争传说时代；两河流域汉谟拉比法典(约前1776)、古埃及新王国。</div>
+  </div>
+
+  <div class="tick" id="t-shang"><span class="year">前1600年</span><span class="era-tag l">商朝</span></div>
+  <div class="row">
+    <div class="card cn"><i class="node"></i>
+      <h3>商朝 <span class="y">（约前1600—前1046）</span></h3>
+      <div class="fig">商汤灭夏；盘庚迁殷；纣王亡国</div>
+      甲骨文成熟、青铜器（司母戊鼎）辉煌。</div>
+    <div class="card west"><i class="node"></i>
+      <h3>古希腊黑暗时代→城邦兴起 <span class="y">（前1100—前800）</span></h3>
+      荷马史诗口传；腓尼基字母传播。</div>
+  </div>
+
+  <div class="era-cn" data-from="#t-zhou" data-to="#t-qin">春秋战国·百家争鸣</div>
+  <div class="tick" id="t-zhou"><span class="year">前1046年</span><span class="era-tag l">西周建立</span></div>
+  <div class="row">
+    <div class="card cn"><i class="node"></i>
+      <h3>西周·东周（春秋战国） <span class="y">（前1046—前771西周；前770—前221东周）</span></h3>
+      <div class="fig">周武王伐纣（牧野之战）；周幽王烽火戏诸侯；春秋五霸（齐桓公、晋文公等）；战国七雄</div>
+      分封制、宗法制；铁器牛耕推广。</div>
+    <div class="card west"><i class="node"></i>
+      <h3>古希腊古典时代 <span class="y">（前800—前336）</span></h3>
+      前776首届奥运会；雅典梭伦改革(前594)、伯里克利黄金时代；苏格拉底(前469-399)、柏拉图、亚里士多德；希波战争(前490马拉松战役)。</div>
+  </div>
+
+  <div class="row">
+    <div class="card cn"><i class="node"></i>
+      <h3>百家争鸣 <span class="y">（春秋战国，前770—前221）</span></h3>
+      <div class="fig">老子（《道德经》）、孔子（前551-479，儒家）、墨子、孟子、庄子、韩非子</div>
+      中国思想史的黄金时代。</div>
+    <div class="card west"><i class="node"></i>
+      <h3>亚历山大东征 <span class="y">（前334—前324）</span></h3>
+      马其顿灭亡波斯，建立横跨欧亚非帝国，希腊化时代开始。</div>
+  </div>
+
+  <!-- ═══════════ 秦汉 ═══════════ -->
+  <div class="era-cn" data-from="#t-qin" data-to="#t-sanguo">秦汉·大一统</div>
+  <div class="tick" id="t-qin"><span class="year">前221年</span><span class="era-tag l">秦统一六国</span></div>
+  <div class="row">
+    <div class="card cn"><i class="node"></i>
+      <h3>秦朝 <span class="y">（前221—前207）</span></h3>
+      <div class="fig"><b>秦始皇嬴政</b>：称"皇帝"、统一文字货币度量衡、郡县制、修长城、焚书坑儒；秦二世胡亥亡国；陈胜吴广起义(前209)</div>
+      中国第一个统一的中央集权封建国家。</div>
+    <div class="card west"><i class="node"></i>
+      <h3>罗马共和国扩张 <span class="y">（布匿战争前264—前146；斯巴达克起义前73—前71）</span></h3>
+      迦太基灭亡；凯撒(前100-44)独裁后被刺。</div>
+  </div>
+
+  <div class="tick" id="t-han"><span class="year">前202年</span><span class="era-tag l">汉朝建立</span></div>
+  <div class="row">
+    <div class="card cn"><i class="node"></i>
+      <h3>西汉·东汉 <span class="y">（前202—公元220；王莽新朝9—23）</span></h3>
+      <div class="fig"><b>汉高祖刘邦</b>建汉；<b>文帝、景帝</b>文景之治；<b>汉武帝刘彻</b>（前141-87在位）：罢黜百家独尊儒术、卫青霍去病击匈奴、张骞通西域开丝绸之路；<b>光武帝刘秀</b>中兴；东汉末黄巾起义(184)</div>
+      蔡伦改进造纸术(105)；司马迁《史记》。</div>
+    <div class="card west"><i class="node"></i>
+      <h3>罗马帝国 <span class="y">（前27—公元476西罗马亡）</span></h3>
+      屋大维(奥古斯都)前27年开创帝制；耶稣诞生(约前4)、基督教兴起；1-2世纪"罗马和平"。</div>
+  </div>
+
+  <div class="link-note"><div class="inner">
+    ⚡ <b>最早的"中外联动"</b>：汉武帝派张骞出使西域（前138、前119两次），开辟<b>丝绸之路</b>，中国丝绸直抵罗马——东西方文明首次直接贸易交流。
+  </div></div>
+
+  <!-- ═══════════ 三国两晋南北朝 ═══════════ -->
+  <div class="era-cn" data-from="#t-sanguo" data-to="#t-sui">三国两晋南北朝</div>
+  <div class="tick" id="t-sanguo"><span class="year">220年</span></div>
+  <div class="row">
+    <div class="card cn"><i class="node"></i>
+      <h3>三国两晋南北朝 <span class="y">（220—589）</span></h3>
+      <div class="fig">魏蜀吴鼎立（曹操、刘备、孙权）；西晋<b>司马炎</b>短暂统一(280)；八王之乱、五胡内迁；东晋<b>司马睿</b>；北魏孝文帝改革(494迁都洛阳汉化)</div>
+      民族大交融；王羲之《兰亭序》、祖冲之圆周率。</div>
+    <div class="card west"><i class="node"></i>
+      <h3>罗马帝国分裂与西罗马灭亡 <span class="y">（395年分裂；476年西罗马亡，欧洲中世纪开始）</span></h3>
+      君士坦丁堡成为东罗马(拜占庭)都城。</div>
+  </div>
+
+  <!-- ═══════════ 隋唐 ═══════════ -->
+  <div class="era-cn" data-from="#t-sui" data-to="#t-song">隋唐盛世</div>
+  <div class="era-west" data-from="#t-sui" data-to="#t-ming">中世纪·基督教文明</div>
+  <div class="tick" id="t-sui"><span class="year">581年</span><span class="era-tag l">隋朝建立</span></div>
+  <div class="row">
+    <div class="card cn"><i class="node"></i>
+      <h3>隋朝 <span class="y">（581—618）</span></h3>
+      <div class="fig"><b>隋文帝杨坚</b>统一南北、开皇之治；<b>隋炀帝杨广</b>开凿大运河(605)、创立科举制、三征高句丽亡国</div>
+      大运河贯通南北经济。</div>
+    <div class="card west"><i class="node"></i>
+      <h3>拜占庭查士丁尼时代 <span class="y">（527—565在位）</span></h3>
+      《查士丁尼法典》；圣索菲亚大教堂。</div>
+  </div>
+
+  <div class="tick" id="t-tang"><span class="year">618年</span><span class="era-tag l">唐朝建立</span></div>
+  <div class="row">
+    <div class="card cn"><i class="node"></i>
+      <h3>唐朝 <span class="y">（618—907）</span></h3>
+      <div class="fig"><b>唐高祖李渊</b>建唐；<b>唐太宗李世民</b>"贞观之治"(627-649)"天可汗"；中国唯一女皇<b>武则天</b>(690-705称帝)；<b>唐玄宗李隆基</b>前期"开元盛世"、后期安史之乱(755-763)转衰</div>
+      李白杜甫诗歌、玄奘西行(629)、鉴真东渡(753)；长安为国际大都会。</div>
+    <div class="card west"><i class="node"></i>
+      <h3>阿拉伯帝国崛起 <span class="y">（622穆罕默德迁麦地那；8世纪成为横跨欧亚非大帝国）</span></h3>
+      怛罗斯之战(751)唐军与阿拉伯军相遇，造纸术西传。</div>
+  </div>
+
+  <div class="row">
+    <div class="card cn"><i class="node"></i>
+      <h3>盛唐转衰 <span class="y">（755安史之乱；907朱温篡唐）</span></h3>
+      安禄山、史思明叛乱；藩镇割据、黄巢起义(875-884)。</div>
+    <div class="card west"><i class="node"></i>
+      <h3>法兰克王国·查理曼帝国 <span class="y">（800年查理曼加冕"罗马人的皇帝"）</span></h3>
+      843《凡尔登条约》三分帝国，法德意雏形。</div>
+  </div>
+
+  <!-- ═══════════ 宋元 ═══════════ -->
+  <div class="era-cn" data-from="#t-song" data-to="#t-ming">宋元·经济文化高峰</div>
+  <div class="tick" id="t-song"><span class="year">960年</span><span class="era-tag l">北宋建立</span></div>
+  <div class="row">
+    <div class="card cn"><i class="node"></i>
+      <h3>宋朝（北宋·南宋） <span class="y">（960—1279）</span></h3>
+      <div class="fig"><b>宋太祖赵匡胤</b>陈桥兵变(960)、杯酒释兵权、重文轻武；<b>宋真宗</b>澶渊之盟(1005)；<b>宋高宗赵构</b>南渡建南宋(1127)；南宋末文天祥抗元</div>
+      活字印刷(毕昇)、指南针用于航海、交子(世界最早纸币)；《清明上河图》。</div>
+    <div class="card west"><i class="node"></i>
+      <h3>中世纪欧洲·诺曼征服·十字军东征 <span class="y">（1066诺曼底威廉征服英格兰；1096—1291十字军东征；1215英国《大宪章》）</span></h3>
+      大学兴起(博洛尼亚1088)；黑死病(1347-1351)夺走欧洲三分之一人口。</div>
+  </div>
+
+  <div class="tick" id="t-yuan"><span class="year">1271年</span><span class="era-tag l">元朝建立</span></div>
+  <div class="row">
+    <div class="card cn"><i class="node"></i>
+      <h3>元朝 <span class="y">（1271—1368）</span></h3>
+      <div class="fig"><b>元世祖忽必烈</b>定都大都(北京)、行省制度；元末红巾军起义</div>
+      马可·波罗来华(1275)；黄道婆改进棉纺；西藏正式纳入中央管辖。</div>
+    <div class="card west"><i class="node"></i>
+      <h3>中世纪盛期·马可·波罗东游 <span class="y">（1271—1295波罗抵达元朝，1298口述《马可·波罗游记》）</span></h3>
+      激发欧洲对东方的向往，间接推动新航路开辟。</div>
+  </div>
+
+  <!-- ═══════════ 明清 ═══════════ -->
+  <div class="era-cn" data-from="#t-ming" data-to="#t-1840">明清·专制与闭关</div>
+  <div class="era-west" data-from="#t-ming" data-to="#t-qing">文艺复兴·大航海·宗教改革</div>
+  <div class="tick" id="t-ming"><span class="year">1368年</span><span class="era-tag l">明朝建立</span></div>
+  <div class="row">
+    <div class="card cn"><i class="node"></i>
+      <h3>明朝 <span class="y">（1368—1644）</span></h3>
+      <div class="fig"><b>明太祖朱元璋</b>废丞相、设锦衣卫、八股取士；<b>明成祖朱棣</b>：迁都北京(1421)、郑和七下西洋(1405-1433)、修《永乐大典》；<b>明神宗万历</b>时张居正改革；<b>崇祯帝</b>时李自成攻入北京亡国</div>
+      戚继光抗倭(1560s)；《本草纲目》《天工开物》。</div>
+    <div class="card west"><i class="node"></i>
+      <h3>文艺复兴·大航海·宗教改革 <span class="y">（1453拜占庭亡；1492哥伦布抵美洲；1517马丁·路德《九十五条论纲》；1519-1522麦哲伦环球）</span></h3>
+      达伽马1498抵印度；但丁、达芬奇、米开朗琪罗、莎士比亚。</div>
+  </div>
+
+  <div class="era-west" data-from="#t-qing" data-to="#t-1911">资产阶级革命·两次工业革命</div>
+  <div class="tick" id="t-qing"><span class="year">1640年</span><span class="era-tag r">英国资产阶级革命</span></div>
+  <div class="row">
+    <div class="card cn"><i class="node"></i>
+      <h3>清朝（前期） <span class="y">（1644清军入关—1840前）</span></h3>
+      <div class="fig"><b>顺治帝</b>入关；<b>康熙帝</b>(1661-1722)：平三藩、收台湾(1683)、雅克萨之战《尼布楚条约》(1689)、三征噶尔丹；<b>雍正帝</b>(1722-1735)：设军机处、摊丁入亩；<b>乾隆帝</b>(1735-1796)：平定准噶尔、编《四库全书》</div>
+      "康乾盛世"达封建顶峰，但闭关自大。</div>
+    <div class="card west"><i class="node"></i>
+      <h3>英国资产阶级革命·启蒙运动 <span class="y">（1640—1688革命；1689《权利法案》君主立宪；18世纪孟德斯鸠、卢梭、伏尔泰）</span></h3>
+      美国1776《独立宣言》；法国1789攻占巴士底狱。</div>
+  </div>
+
+  <div class="tick" id="t-gy1"><span class="year">18世纪中叶</span><span class="era-tag r">第一次工业革命</span></div>
+  <div class="row">
+    <div class="card cn"><i class="node"></i>
+      <h3>闭关锁国 <span class="y">（1757乾隆限广州一口通商；1793马戛尔尼使团遭拒）</span></h3>
+      <div class="fig">乾隆致英王："天朝物产丰盈，无所不有"</div>
+      与工业革命的世界潮流擦肩而过。</div>
+    <div class="card west"><i class="node"></i>
+      <h3>第一次工业革命 <span class="y">（1765哈格里夫斯珍妮机；1785瓦特改良蒸汽机投产；1825史蒂芬孙蒸汽机车）</span></h3>
+      人类进入"蒸汽时代"，英国成为"世界工厂"。</div>
+  </div>
+
+  <div class="link-note"><div class="inner">
+    ⚡ <b>中外联动的转折点</b>：工业革命后的英国急需市场 → 对华走私鸦片 → 林则徐<b>虎门销烟</b>(1839.6) → <b>鸦片战争</b>爆发。中国被强行拖入世界体系，开始沦为半殖民地半封建社会。
+  </div></div>
+
+  <!-- ═══════════ 晚清 ═══════════ -->
+  <div class="era-cn" data-from="#t-1840" data-to="#t-1911">晚清·救亡图存</div>
+  <div class="tick" id="t-1840"><span class="year">1840年</span><span class="era-tag l">中国近代史开端</span></div>
+  <div class="row">
+    <div class="card cn"><i class="node"></i>
+      <h3>鸦片战争·《南京条约》 <span class="y">（1840—1842；割香港岛、赔款2100万银元、五口通商）</span></h3>
+      <div class="fig">道光帝在位；林则徐虎门销烟；关天培殉国；魏源《海国图志》"师夷长技以制夷"(1842)</div></div>
+    <div class="card west"><i class="node"></i>
+      <h3>英国完成工业革命 <span class="y">（19世纪40年代）</span></h3>
+      资本主义世界市场初步形成，列强全球扩张。</div>
+  </div>
+
+  <div class="row">
+    <div class="card cn"><i class="node"></i>
+      <h3>第二次鸦片战争·太平天国 <span class="y">（1856—1860英法联军火烧圆明园；1851—1864太平天国）</span></h3>
+      <div class="fig">咸丰帝出逃热河；洪秀全金田起义；曾国藩、李鸿章湘淮军镇压；《天津条约》《北京条约》</div></div>
+    <div class="card west"><i class="node"></i>
+      <h3>资本主义制度扩展 <span class="y">（1861俄国废除农奴制；1861—1865美国南北战争，林肯《解放黑人奴隶宣言》；1868日本明治维新）</span></h3></div>
+  </div>
+
+  <div class="row">
+    <div class="card cn"><i class="node"></i>
+      <h3>洋务运动 <span class="y">（19世纪60—90年代）</span></h3>
+      <div class="fig">奕䜣、曾国藩、李鸿章、左宗棠："自强""求富"；江南制造总局(1865)、轮船招商局(1872)、北洋水师(1888)</div></div>
+    <div class="card west"><i class="node"></i>
+      <h3>第二次工业革命 <span class="y">（1870前后；1879爱迪生电灯；1885卡尔·本茨汽车）</span></h3>
+      电力时代，美德后来居上。</div>
+  </div>
+
+  <div class="tick" id="t-1894"><span class="year">1894年</span></div>
+  <div class="row">
+    <div class="card cn"><i class="node"></i>
+      <h3>甲午战争·《马关条约》 <span class="y">（1894—1895；割台湾、赔款2亿两、允许列强在华设厂）</span></h3>
+      <div class="fig">光绪帝在位；邓世昌黄海殉国；洋务运动破产</div>
+      <h3>戊戌变法→八国联军→《辛丑条约》 <span class="y">（1898.6-9百日维新；1900八国联军；1901赔款4.5亿两）</span></h3>
+      <div class="fig">康有为、梁启超、谭嗣同（"戊戌六君子"）；慈禧太后西逃</div></div>
+    <div class="card west"><i class="node"></i>
+      <h3>列强瓜分世界·美国"门户开放" <span class="y">（1897—1899；垄断组织形成，进入帝国主义阶段）</span></h3></div>
+  </div>
+
+  <div class="era-cn" data-from="#t-1911" data-to="#t-1949">民国·新民主主义革命</div>
+  <div class="era-west" data-from="#t-1911" data-to="#t-1949">两次大战·十月革命</div>
+  <div class="tick" id="t-1911"><span class="year">1911年</span></div>
+  <div class="row">
+    <div class="card cn"><i class="node"></i>
+      <h3>辛亥革命·中华民国成立 <span class="y">（1911.10.10武昌起义；1912.1.1孙中山就任临时大总统；1912.2宣统帝溥仪退位）</span></h3>
+      <div class="fig"><b>孙中山</b>1905年创立同盟会，提出<b>三民主义</b>（民族、民权、民生）；《中华民国临时约法》(1912)；后袁世凯窃取革命果实</div>
+      结束两千余年帝制。</div>
+    <div class="card west"><i class="node"></i>
+      <h3>第一次世界大战 <span class="y">（1914.7.28萨拉热窝事件后爆发—1918.11.11）</span></h3>
+      凡尔登"绞肉机"(1916)；列强放松对华侵略，民族工业"短暂春天"。</div>
+  </div>
+
+  <div class="link-note"><div class="inner">
+    ⚡ <b>中外联动的转折点</b>：巴黎和会中国外交失败(1919.5，山东权益转日本)→<b>五四运动</b>(1919.5.4)；俄国<b>十月革命</b>(1917.11.7)送来马克思列宁主义→李大钊传播(1918《庶民的胜利》)→1921.7.23<b>中国共产党成立</b>。
+  </div></div>
+
+  <!-- ═══════════ 民国与新民主主义革命 ═══════════ -->
+  <div class="tick" id="t-1919"><span class="year">1919年</span></div>
+  <div class="row">
+    <div class="card cn"><i class="node"></i>
+      <h3>新文化运动·五四运动·中共成立 <span class="y">（1915陈独秀创《青年杂志》；1919五四；1921.7中共一大）</span></h3>
+      <div class="fig">陈独秀、李大钊、胡适、鲁迅倡"民主""科学"；一大13位代表，毛泽东出席</div></div>
+    <div class="card west"><i class="node"></i>
+      <h3>十月革命·凡尔赛—华盛顿体系 <span class="y">（1917.11.7列宁领导；1921新经济政策；1919《凡尔赛和约》、1921-22华盛顿会议）</span></h3></div>
+  </div>
+
+  <div class="tick" id="t-1927"><span class="year">1927年</span></div>
+  <div class="row">
+    <div class="card cn"><i class="node"></i>
+      <h3>南昌起义·井冈山道路·长征 <span class="y">（1927.8.1南昌起义；1927.10井冈山根据地；1934-1936长征；1935.1遵义会议）</span></h3>
+      <div class="fig">周恩来、贺龙打响武装反抗第一枪；毛泽东开辟"农村包围城市"；遵义会议确立毛泽东领导地位</div></div>
+    <div class="card west"><i class="node"></i>
+      <h3>经济大危机·罗斯福新政 <span class="y">（1929.10.24股灾；1933罗斯福推行新政；希特勒1933上台）</span></h3></div>
+  </div>
+
+  <div class="tick" id="t-1937"><span class="year">1937年</span></div>
+  <div class="row">
+    <div class="card cn"><i class="node"></i>
+      <h3>全民族抗战 <span class="y">（1931.9.18九一八；1936.12.12西安事变；1937.7.7卢沟桥；1945.8.15日本投降）</span></h3>
+      <div class="fig">杨靖宇、赵一曼、张自忠；台儿庄大捷(1938)、百团大战(1940)；1945.4中共七大确立毛泽东思想</div></div>
+    <div class="card west"><i class="node"></i>
+      <h3>第二次世界大战 <span class="y">（1939.9.1德国闪击波兰—1945.9.2）</span></h3>
+      斯大林格勒(1942-43)、诺曼底(1944.6.6)、雅尔塔会议(1945.2)；1945.10.24联合国成立。</div>
+  </div>
+
+  <div class="era-cn" data-from="#t-1949">共和国·现代化征程</div>
+  <div class="era-west" data-from="#t-1949">冷战·全球化·多极化</div>
+  <div class="tick" id="t-1949"><span class="year">1949年</span><span class="era-tag l">新中国成立</span></div>
+  <div class="row">
+    <div class="card cn"><i class="node"></i>
+      <h3>解放战争·中华人民共和国成立 <span class="y">（1946—1949三大战役、渡江战役；1949.10.1开国大典）</span></h3>
+      <div class="fig">毛泽东在天安门宣告"中国人民从此站起来了"</div></div>
+    <div class="card west"><i class="node"></i>
+      <h3>冷战开始 <span class="y">（1946铁幕演说；1947.3杜鲁门主义；1948马歇尔计划；1949.4北约成立）</span></h3></div>
+  </div>
+
+  <!-- ═══════════ 现代史 ═══════════ -->
+  <div class="tick" id="t-1950"><span class="year">1950年代</span></div>
+  <div class="row">
+    <div class="card cn"><i class="node"></i>
+      <h3>抗美援朝·一五计划·三大改造 <span class="y">（1950-1953；1953-1957；1956年底改造完成）</span></h3>
+      <div class="fig">彭德怀挂帅赴朝；鞍钢、长春一汽、武汉长江大桥(1957)；1956中共八大</div>
+      <h3>👤 <b>毛泽东</b>时代（1949—1976）</h3>
+      <div class="fig">理念：<b>毛泽东思想</b>——人民民主专政、独立自主、自力更生；"三个世界"划分理论</div></div>
+    <div class="card west"><i class="node"></i>
+      <h3>华约成立·朝鲜战争 <span class="y">（1955.5华约成立，两极格局定型；1950-1953朝鲜战争；1957《罗马条约》欧共体）</span></h3></div>
+  </div>
+
+  <div class="tick" id="t-1960"><span class="year">1960年代</span></div>
+  <div class="row">
+    <div class="card cn"><i class="node"></i>
+      <h3>两弹一星·曲折探索 <span class="y">（1964.10.16原子弹；1967氢弹；1970.4.24东方红一号）</span></h3>
+      <div class="fig">钱学森、邓稼先、钱三强；大庆油田；雷锋、焦裕禄、王进喜精神</div></div>
+    <div class="card west"><i class="node"></i>
+      <h3>古巴导弹危机·越南战争·登月 <span class="y">（1962.10；1964-1973越战；1963马丁·路德·金《我有一个梦想》；1969.7.20阿波罗11号登月）</span></h3></div>
+  </div>
+
+  <div class="link-note"><div class="inner">
+    ⚡ <b>中外联动的转折点</b>：1971.10.25中国恢复联合国合法席位（"乔的笑"）；1972.2尼克松访华签《上海公报》；1972.9中日建交；1979.1.1中美正式建交——中国重返世界舞台。
+  </div></div>
+
+  <div class="tick" id="t-1970"><span class="year">1970年代</span></div>
+  <div class="row">
+    <div class="card cn"><i class="node"></i>
+      <h3>重返联合国·中美破冰 <span class="y">（1971.10.25第26届联大；1972.2尼克松访华；1976粉碎"四人帮"）</span></h3>
+      <div class="fig">乒乓外交(1971)"小球转动大球"</div>
+      <h3>👤 华国锋（1976—1981，主席）过渡时期</h3></div>
+    <div class="card west"><i class="node"></i>
+      <h3>石油危机·战略调整 <span class="y">（1973石油危机；1979.12苏联入侵阿富汗）</span></h3></div>
+  </div>
+
+  <div class="tick" id="t-1978"><span class="year">1978年</span><span class="era-tag l">改革开放</span></div>
+  <div class="row">
+    <div class="card cn"><i class="node"></i>
+      <h3>十一届三中全会·改革开放 <span class="y">（1978.12.18-22；1980设深圳等4个经济特区；1992南方谈话；1992中共十四大确立市场经济体制目标）</span></h3>
+      <div class="fig"><b>👤 邓小平</b>（第二代领导核心，主导改革开放1978-1992）<br>理念：<b>邓小平理论</b>——"解放思想、实事求是"；"发展才是硬道理"；"一国两制"；社会主义初级阶段论</div>
+      小岗村家庭联产承包(1978)。</div>
+    <div class="card west"><i class="node"></i>
+      <h3>信息技术革命·冷战尾声 <span class="y">（1981IBM个人电脑；1989.11柏林墙倒塌）</span></h3></div>
+  </div>
+
+  <div class="tick" id="t-1990"><span class="year">1990年代</span></div>
+  <div class="row">
+    <div class="card cn"><i class="node"></i>
+      <h3>香港澳门回归·加入WTO <span class="y">（1997.7.1香港回归；1999.12.20澳门回归；2001.12.11入世）</span></h3>
+      <div class="fig"><b>👤 江泽民</b>（国家主席1993—2003）<br>理念：<b>"三个代表"重要思想</b>——代表先进生产力、先进文化、最广大人民根本利益；1997中共十五大确立邓小平理论为指导思想</div></div>
+    <div class="card west"><i class="node"></i>
+      <h3>苏联解体·冷战结束·欧盟 <span class="y">（1991.12.25苏联解体；1993欧盟成立；1995WTO成立；1999欧元启动）</span></h3></div>
+  </div>
+
+  <div class="tick" id="t-21c"><span class="year">21世纪初</span></div>
+  <div class="row">
+    <div class="card cn"><i class="node"></i>
+      <h3>科学发展的十年 <span class="y">（2003杨利伟神舟五号；2008北京奥运；2010上海世博、GDP世界第二）</span></h3>
+      <div class="fig"><b>👤 胡锦涛</b>（国家主席2003—2013）<br>理念：<b>科学发展观</b>——以人为本、全面协调可持续；构建<b>社会主义和谐社会</b></div></div>
+    <div class="card west"><i class="node"></i>
+      <h3>911·金融危机·移动互联网 <span class="y">（2001.9.11；2008.9全球金融危机；2007iPhone发布）</span></h3></div>
+  </div>
+
+  <div class="tick" id="t-now"><span class="year">2012年至今</span><span class="era-tag l">新时代</span></div>
+  <div class="row">
+    <div class="card cn"><i class="node"></i>
+      <h3>中国特色社会主义新时代 <span class="y">（2012.11中共十八大；2013"一带一路"倡议；2017中共十九大；2020全面建成小康社会；2021脱贫攻坚全面胜利；2022中共二十大）</span></h3>
+      <div class="fig"><b>👤 习近平</b>（国家主席2013—至今）<br>理念：<b>习近平新时代中国特色社会主义思想</b>——"中国梦"（中华民族伟大复兴）；<b>"一带一路"</b>倡议；人类命运共同体；"绿水青山就是金山银山"；共同富裕；中国式现代化</div>
+      高铁、天宫空间站(2022建成)、C919、北斗组网(2020)。</div>
+    <div class="card west"><i class="node"></i>
+      <h3>多极化与科技革命 <span class="y">（2016特朗普当选、英国脱欧公投；2020新冠疫情全球爆发；2022俄乌冲突；2022ChatGPT掀起AI革命）</span></h3>
+      世界百年未有之大变局加速演进。</div>
+  </div>
+</div>
+
+<footer>中外对照仅为帮助理解的主要事件对应，欢迎增补细节数据。</footer>
+
+<script>
+// 1) 卡片入场动画
+const io=new IntersectionObserver(es=>es.forEach(e=>{
+  if(e.isIntersecting){e.target.style.opacity=1;e.target.style.transform='none';io.unobserve(e.target)}
+}),{threshold:.1});
+document.querySelectorAll('.card').forEach((c,i)=>{
+  c.style.opacity=0;c.style.transform='translateY(16px)';
+  c.style.transition=`all .5s ${i%4*0.06}s ease`;
+  io.observe(c);
+});
+
+// 2) 分期色带定位：桌面端锚定起止刻度；手机端为文档流横条（清除定位）
+const tl=document.querySelector('.timeline');
+function layoutBands(){
+  const isMobile=!window.matchMedia('(min-width:769px)').matches;
+  document.querySelectorAll('.era-cn,.era-west').forEach(b=>{
+    if(isMobile){b.style.top='';b.style.height='';return;}
+    const from=document.querySelector(b.dataset.from);
+    if(!from)return;
+    const to=b.dataset.to?document.querySelector(b.dataset.to):null;
+    const base=tl.getBoundingClientRect().top;
+    const top=from.getBoundingClientRect().top-base;
+    const bottom=to?to.getBoundingClientRect().top-base:tl.scrollHeight;
+    b.style.top=top+'px';
+    b.style.height=Math.max(60,bottom-top-8)+'px';
+  });
+}
+window.addEventListener('load',layoutBands);
+window.addEventListener('resize',layoutBands);
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(layoutBands);
+if(window.ResizeObserver){new ResizeObserver(layoutBands).observe(tl);}
+layoutBands();
+</script>
+</body>
+</html>

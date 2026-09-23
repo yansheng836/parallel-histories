@@ -1,0 +1,58 @@
+name: 功能建议 / 样式问题
+description: 建议补充内容、改进样式或交互
+title: "[建议] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        欢迎提建议。请先看看 [已有 Issue](https://github.com/yansheng836/parallel-histories/issues?q=is%3Aissue) 和 [贡献指南](../blob/main/CONTRIBUTING.md)。
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: 建议类型
+      options:
+        - 补充历史事件 / 时间刻度
+        - 新增「中外联动」卡片
+        - 样式 / 布局改进
+        - 交互 / 可访问性
+        - 性能优化
+        - 其他
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: 现状是什么 / 遇到了什么问题
+      description: 描述当前的情况，越具体越好。
+      placeholder: |
+        例如：手机端（375px）下夏商周那部分的分期色带挤在一起，看不清。
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 你希望改成什么样
+      description: 如果有具体的实现思路或者参考链接，一并写上。
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: 环境信息（涉及样式/交互时请填）
+      description: 浏览器与版本、屏幕宽度、操作系统
+      placeholder: 例如：Chrome 128 / 375px / Android 14
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: 确认
+      options:
+        - label: 我已经搜索过现有 Issue，没有找到重复的
+          required: true

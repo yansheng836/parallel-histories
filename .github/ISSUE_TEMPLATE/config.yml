@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 📖 贡献指南 / Contributing Guide
+    url: https://github.com/yansheng836/parallel-histories/blob/main/CONTRIBUTING.md
+    about: 想直接改内容？先看这里，包括年份写法、HTML 结构和提交规范。
+  - name: 💬 讨论 / Discussions
+    url: https://github.com/yansheng836/parallel-histories/discussions
+    about: 对某个历史表述有不同看法，或者想聊聊内容取舍，欢迎来这里。
+  - name: 🌐 在线预览 / Live Demo
+    url: https://yansheng836.github.io/parallel-histories/
+    about: 先在线上看看当前版本，确认问题是否已经存在。

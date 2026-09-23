@@ -1,0 +1,72 @@
+name: 史实纠错
+description: 报告时间轴上的史实错误（年份、人物、事件描述等）
+title: "[纠错] "
+labels: ["correction"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢你帮忙纠正史实！**依据越充分，修正越快。**
+
+        提交前请先搜索一下 [已有 Issue](https://github.com/yansheng836/parallel-histories/issues?q=is%3Aissue)，避免重复。
+
+  - type: input
+    id: location
+    attributes:
+      label: 错误位置
+      description: 哪个时间刻度或事件卡片？可以把卡片标题贴上来，或者描述它在页面的大致位置。
+      placeholder: 例如：1840年刻度下方的「鸦片战争·《南京条约》」卡片
+    validations:
+      required: true
+
+  - type: textarea
+    id: current
+    attributes:
+      label: 页面当前的写法
+      description: 把页面上原样复制过来即可。
+      placeholder: 例如：（1840—1842；割香港岛、赔款2100万银元、五口通商）
+    validations:
+      required: true
+
+  - type: textarea
+    id: correction
+    attributes:
+      label: 正确的写法应该是
+      description: 请给出你认为正确的表述。
+    validations:
+      required: true
+
+  - type: textarea
+    id: source
+    attributes:
+      label: 依据来源
+      description: |
+        教材名称与页码、权威著作、或可靠网页链接。
+        **没有来源的纠错也可能被采纳，但有来源的会优先处理。**
+      placeholder: |
+        例如：人教版《中外历史纲要（上）》第 xx 页
+        或：https://...
+    validations:
+      required: false
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: 错误严重程度
+      options:
+        - 明显错误（年份/人物张冠李戴，会误导读者）
+        - 细节偏差（年份差几年、表述不够准确）
+        - 存在争议（有多种说法，建议补充说明）
+        - 其他
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: 确认
+      options:
+        - label: 我已经搜索过现有 Issue，没有找到重复的
+          required: true
+        - label: 我理解这是个学习辅助材料，早期年代（夏商周等）采用通说，与其他研究存在差异是正常的
+          required: false
