@@ -13,7 +13,12 @@
 
 [English](README.en.md) | **简体中文**
 
-<img src="docs/preview.png" alt="中外历史对照时间轴预览" width="90%">
+<!-- TODO: 截图替换预览图
+     1. 本地打开 index.html（或访问在线版）
+     2. 窗口宽度设为 1280px，截取「隋唐盛世」到「明清」那一段（左右对照效果最明显）
+     3. 保存为 docs/preview.png，然后删掉这段注释和下面的提示行
+-->
+> 📷 *预览图待补充 —— 可先访问[在线版](https://yansheng836.github.io/parallel-histories/)查看效果*
 
 </div>
 

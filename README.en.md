@@ -13,7 +13,13 @@ Read Chinese history and world history on the same timeline.
 
 **English** | [简体中文](README.md)
 
-<img src="docs/preview.png" alt="Parallel Histories timeline preview" width="90%">
+<!-- TODO: replace with a real screenshot
+     1. Open index.html locally (or the live version)
+     2. Set the window to 1280px wide and capture the Sui-Tang through Ming-Qing section
+        (the side-by-side layout reads best there)
+     3. Save as docs/preview.png, then delete this comment and the notice line below
+-->
+> 📷 *Preview image coming soon — see the [live demo](https://yansheng836.github.io/parallel-histories/) meanwhile*
 
 </div>
 
