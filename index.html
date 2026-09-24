@@ -116,6 +116,13 @@
   }
   .link-note b{color:var(--link)}
 
+  /* 断轴符号：比例被局部放大的区间，由 JS 在运行时插入，CSS 不预设定位之外的状态 */
+  .axis-break{
+    position:absolute;left:50%;transform:translateX(-50%);
+    font-size:11px;color:#95a5a6;z-index:2;
+    background:#f7f5f0;padding:2px 0;
+  }
+
   footer{text-align:center;padding:20px;font-size:12px;color:#95a5a6}
 
   /* ═══════════════ 手机端适配 ═══════════════ */
@@ -199,10 +206,10 @@
   <div class="axis"></div>
 
   <!-- ═══════════ 上古三代 ═══════════ -->
-  <div class="era-cn" data-from="#t-xia" data-to="#t-zhou">夏商·王朝之始</div>
-  <div class="era-west" data-from="#t-xia" data-to="#t-sui">上古文明·古希腊罗马</div>
+  <div class="era-cn" data-start="-2070" data-end="-1046" data-from="#t-xia" data-to="#t-zhou">夏商·王朝之始</div>
+  <div class="era-west" data-start="-2070" data-end="581" data-from="#t-xia" data-to="#t-sui">上古文明·古希腊罗马</div>
 
-  <div class="tick" id="t-xia"><span class="year">约前2070年</span><span class="era-tag l">夏朝建立</span></div>
+  <div class="tick" id="t-xia" data-date="-2070"><span class="year">约前2070年</span><span class="era-tag l">夏朝建立</span></div>
   <div class="row">
     <div class="card cn"><i class="node"></i>
       <h3>夏朝 <span class="y">（约前2070—前1600）</span></h3>
@@ -213,7 +220,7 @@
       米诺斯王宫、特洛伊战争传说时代；两河流域汉谟拉比法典(约前1776)、古埃及新王国。</div>
   </div>
 
-  <div class="tick" id="t-shang"><span class="year">前1600年</span><span class="era-tag l">商朝</span></div>
+  <div class="tick" id="t-shang" data-date="-1600"><span class="year">前1600年</span><span class="era-tag l">商朝</span></div>
   <div class="row">
     <div class="card cn"><i class="node"></i>
       <h3>商朝 <span class="y">（约前1600—前1046）</span></h3>
@@ -224,8 +231,8 @@
       荷马史诗口传；腓尼基字母传播。</div>
   </div>
 
-  <div class="era-cn" data-from="#t-zhou" data-to="#t-qin">春秋战国·百家争鸣</div>
-  <div class="tick" id="t-zhou"><span class="year">前1046年</span><span class="era-tag l">西周建立</span></div>
+  <div class="era-cn" data-start="-1046" data-end="-221" data-from="#t-zhou" data-to="#t-qin">春秋战国·百家争鸣</div>
+  <div class="tick" id="t-zhou" data-date="-1046"><span class="year">前1046年</span><span class="era-tag l">西周建立</span></div>
   <div class="row">
     <div class="card cn"><i class="node"></i>
       <h3>西周·东周（春秋战国） <span class="y">（前1046—前771西周；前770—前256东周；前221秦统一）</span></h3>
@@ -247,8 +254,8 @@
   </div>
 
   <!-- ═══════════ 秦汉 ═══════════ -->
-  <div class="era-cn" data-from="#t-qin" data-to="#t-sanguo">秦汉·大一统</div>
-  <div class="tick" id="t-qin"><span class="year">前221年</span><span class="era-tag l">秦统一六国</span></div>
+  <div class="era-cn" data-start="-221" data-end="220" data-from="#t-qin" data-to="#t-sanguo">秦汉·大一统</div>
+  <div class="tick" id="t-qin" data-date="-221"><span class="year">前221年</span><span class="era-tag l">秦统一六国</span></div>
   <div class="row">
     <div class="card cn"><i class="node"></i>
       <h3>秦朝 <span class="y">（前221—前207）</span></h3>
@@ -259,7 +266,7 @@
       迦太基灭亡；凯撒(前100-44)独裁后被刺。</div>
   </div>
 
-  <div class="tick" id="t-han"><span class="year">前202年</span><span class="era-tag l">汉朝建立</span></div>
+  <div class="tick" id="t-han" data-date="-202"><span class="year">前202年</span><span class="era-tag l">汉朝建立</span></div>
   <div class="row">
     <div class="card cn"><i class="node"></i>
       <h3>西汉·东汉 <span class="y">（前202—公元220；王莽新朝9—23）</span></h3>
@@ -275,8 +282,8 @@
   </div></div>
 
   <!-- ═══════════ 三国两晋南北朝 ═══════════ -->
-  <div class="era-cn" data-from="#t-sanguo" data-to="#t-sui">三国两晋南北朝</div>
-  <div class="tick" id="t-sanguo"><span class="year">220年</span></div>
+  <div class="era-cn" data-start="220" data-end="581" data-from="#t-sanguo" data-to="#t-sui">三国两晋南北朝</div>
+  <div class="tick" id="t-sanguo" data-date="220"><span class="year">220年</span></div>
   <div class="row">
     <div class="card cn"><i class="node"></i>
       <h3>三国两晋南北朝 <span class="y">（220—589）</span></h3>
@@ -288,9 +295,9 @@
   </div>
 
   <!-- ═══════════ 隋唐 ═══════════ -->
-  <div class="era-cn" data-from="#t-sui" data-to="#t-song">隋唐盛世</div>
-  <div class="era-west" data-from="#t-sui" data-to="#t-ming">中世纪·基督教文明</div>
-  <div class="tick" id="t-sui"><span class="year">581年</span><span class="era-tag l">隋朝建立</span></div>
+  <div class="era-cn" data-start="581" data-end="960" data-from="#t-sui" data-to="#t-song">隋唐盛世</div>
+  <div class="era-west" data-start="581" data-end="1368" data-from="#t-sui" data-to="#t-ming">中世纪·基督教文明</div>
+  <div class="tick" id="t-sui" data-date="581"><span class="year">581年</span><span class="era-tag l">隋朝建立</span></div>
   <div class="row">
     <div class="card cn"><i class="node"></i>
       <h3>隋朝 <span class="y">（581—618）</span></h3>
@@ -301,7 +308,7 @@
       《查士丁尼法典》；圣索菲亚大教堂。</div>
   </div>
 
-  <div class="tick" id="t-tang"><span class="year">618年</span><span class="era-tag l">唐朝建立</span></div>
+  <div class="tick" id="t-tang" data-date="618"><span class="year">618年</span><span class="era-tag l">唐朝建立</span></div>
   <div class="row">
     <div class="card cn"><i class="node"></i>
       <h3>唐朝 <span class="y">（618—907）</span></h3>
@@ -322,8 +329,8 @@
   </div>
 
   <!-- ═══════════ 宋元 ═══════════ -->
-  <div class="era-cn" data-from="#t-song" data-to="#t-ming">宋元·经济文化高峰</div>
-  <div class="tick" id="t-song"><span class="year">960年</span><span class="era-tag l">北宋建立</span></div>
+  <div class="era-cn" data-start="960" data-end="1368" data-from="#t-song" data-to="#t-ming">宋元·经济文化高峰</div>
+  <div class="tick" id="t-song" data-date="960"><span class="year">960年</span><span class="era-tag l">北宋建立</span></div>
   <div class="row">
     <div class="card cn"><i class="node"></i>
       <h3>宋朝（北宋·南宋） <span class="y">（960—1279）</span></h3>
@@ -334,7 +341,7 @@
       大学兴起(博洛尼亚1088)；黑死病(1347-1351)夺走欧洲三分之一人口。</div>
   </div>
 
-  <div class="tick" id="t-yuan"><span class="year">1271年</span><span class="era-tag l">元朝建立</span></div>
+  <div class="tick" id="t-yuan" data-date="1271"><span class="year">1271年</span><span class="era-tag l">元朝建立</span></div>
   <div class="row">
     <div class="card cn"><i class="node"></i>
       <h3>元朝 <span class="y">（1271—1368）</span></h3>
@@ -346,9 +353,9 @@
   </div>
 
   <!-- ═══════════ 明清 ═══════════ -->
-  <div class="era-cn" data-from="#t-ming" data-to="#t-1840">明清·专制与闭关</div>
-  <div class="era-west" data-from="#t-ming" data-to="#t-qing">文艺复兴·大航海·宗教改革</div>
-  <div class="tick" id="t-ming"><span class="year">1368年</span><span class="era-tag l">明朝建立</span></div>
+  <div class="era-cn" data-start="1368" data-end="1840" data-from="#t-ming" data-to="#t-1840">明清·专制与闭关</div>
+  <div class="era-west" data-start="1368" data-end="1640" data-from="#t-ming" data-to="#t-qing">文艺复兴·大航海·宗教改革</div>
+  <div class="tick" id="t-ming" data-date="1368"><span class="year">1368年</span><span class="era-tag l">明朝建立</span></div>
   <div class="row">
     <div class="card cn"><i class="node"></i>
       <h3>明朝 <span class="y">（1368—1644）</span></h3>
@@ -359,8 +366,8 @@
       达伽马1498抵印度；但丁、达芬奇、米开朗琪罗、莎士比亚。</div>
   </div>
 
-  <div class="era-west" data-from="#t-qing" data-to="#t-1911">资产阶级革命·两次工业革命</div>
-  <div class="tick" id="t-qing"><span class="year">1640年</span><span class="era-tag r">英国资产阶级革命</span></div>
+  <div class="era-west" data-start="1640" data-end="1911" data-from="#t-qing" data-to="#t-1911">资产阶级革命·两次工业革命</div>
+  <div class="tick" id="t-qing" data-date="1640"><span class="year">1640年</span><span class="era-tag r">英国资产阶级革命</span></div>
   <div class="row">
     <div class="card cn"><i class="node"></i>
       <h3>清朝（前期） <span class="y">（1644清军入关—1840前）</span></h3>
@@ -371,7 +378,7 @@
       美国1776《独立宣言》；法国1789攻占巴士底狱。</div>
   </div>
 
-  <div class="tick" id="t-gy1"><span class="year">18世纪中叶</span><span class="era-tag r">第一次工业革命</span></div>
+  <div class="tick" id="t-gy1" data-date="1765"><span class="year">18世纪中叶</span><span class="era-tag r">第一次工业革命</span></div>
   <div class="row">
     <div class="card cn"><i class="node"></i>
       <h3>闭关锁国 <span class="y">（1757乾隆限广州一口通商；1793马戛尔尼使团遭拒）</span></h3>
@@ -387,8 +394,8 @@
   </div></div>
 
   <!-- ═══════════ 晚清 ═══════════ -->
-  <div class="era-cn" data-from="#t-1840" data-to="#t-1911">晚清·救亡图存</div>
-  <div class="tick" id="t-1840"><span class="year">1840年</span><span class="era-tag l">中国近代史开端</span></div>
+  <div class="era-cn" data-start="1840" data-end="1911" data-from="#t-1840" data-to="#t-1911">晚清·救亡图存</div>
+  <div class="tick" id="t-1840" data-date="1840"><span class="year">1840年</span><span class="era-tag l">中国近代史开端</span></div>
   <div class="row">
     <div class="card cn"><i class="node"></i>
       <h3>鸦片战争·《南京条约》 <span class="y">（1840—1842；割香港岛、赔款2100万银元、五口通商）</span></h3>
@@ -415,7 +422,7 @@
       电力时代，美德后来居上。</div>
   </div>
 
-  <div class="tick" id="t-1894"><span class="year">1894年</span></div>
+  <div class="tick" id="t-1894" data-date="1894"><span class="year">1894年</span></div>
   <div class="row">
     <div class="card cn"><i class="node"></i>
       <h3>甲午战争·《马关条约》 <span class="y">（1894—1895；割台湾、赔款2亿两、允许列强在华设厂）</span></h3>
@@ -424,16 +431,16 @@
       <h3>列强瓜分世界·美国"门户开放" <span class="y">（1897—1899；垄断组织形成，进入帝国主义阶段）</span></h3></div>
   </div>
 
-  <div class="tick" id="t-1898"><span class="year">1898年</span></div>
+  <div class="tick" id="t-1898" data-date="1898"><span class="year">1898年</span></div>
   <div class="row">
     <div class="card cn"><i class="node"></i>
       <h3>戊戌变法→八国联军→《辛丑条约》 <span class="y">（1898.6-9百日维新；1900八国联军；1901赔款4.5亿两）</span></h3>
       <div class="fig">康有为、梁启超、谭嗣同（"戊戌六君子"）；慈禧太后西逃</div></div>
   </div>
 
-  <div class="era-cn" data-from="#t-1911" data-to="#t-1949">民国·新民主主义革命</div>
-  <div class="era-west" data-from="#t-1911" data-to="#t-1949">两次大战·十月革命</div>
-  <div class="tick" id="t-1911"><span class="year">1911年</span></div>
+  <div class="era-cn" data-start="1911" data-end="1949" data-from="#t-1911" data-to="#t-1949">民国·新民主主义革命</div>
+  <div class="era-west" data-start="1911" data-end="1949" data-from="#t-1911" data-to="#t-1949">两次大战·十月革命</div>
+  <div class="tick" id="t-1911" data-date="1911"><span class="year">1911年</span></div>
   <div class="row">
     <div class="card cn"><i class="node"></i>
       <h3>辛亥革命·中华民国成立 <span class="y">（1911.10.10武昌起义；1912.1.1孙中山就任临时大总统；1912.2宣统帝溥仪退位）</span></h3>
@@ -449,7 +456,7 @@
   </div></div>
 
   <!-- ═══════════ 民国与新民主主义革命 ═══════════ -->
-  <div class="tick" id="t-1919"><span class="year">1919年</span></div>
+  <div class="tick" id="t-1919" data-date="1919"><span class="year">1919年</span></div>
   <div class="row">
     <div class="card cn"><i class="node"></i>
       <h3>新文化运动·五四运动·中共成立 <span class="y">（1915陈独秀创《青年杂志》；1919五四；1921.7中共一大）</span></h3>
@@ -458,7 +465,7 @@
       <h3>十月革命·凡尔赛—华盛顿体系 <span class="y">（1917.11.7列宁领导；1921新经济政策；1919《凡尔赛和约》、1921-22华盛顿会议）</span></h3></div>
   </div>
 
-  <div class="tick" id="t-1927"><span class="year">1927年</span></div>
+  <div class="tick" id="t-1927" data-date="1927"><span class="year">1927年</span></div>
   <div class="row">
     <div class="card cn"><i class="node"></i>
       <h3>南昌起义·井冈山道路·长征 <span class="y">（1927.8.1南昌起义；1927.10井冈山根据地；1934-1936长征；1935.1遵义会议）</span></h3>
@@ -467,7 +474,7 @@
       <h3>经济大危机·罗斯福新政 <span class="y">（1929.10.24股灾；1933罗斯福推行新政；希特勒1933上台）</span></h3></div>
   </div>
 
-  <div class="tick" id="t-1937"><span class="year">1937年</span></div>
+  <div class="tick" id="t-1937" data-date="1937"><span class="year">1937年</span></div>
   <div class="row">
     <div class="card cn"><i class="node"></i>
       <h3>全民族抗战 <span class="y">（1931.9.18九一八；1936.12.12西安事变；1937.7.7卢沟桥；1945.8.15日本投降）</span></h3>
@@ -477,9 +484,9 @@
       斯大林格勒(1942-43)、诺曼底(1944.6.6)、雅尔塔会议(1945.2)；1945.10.24联合国成立。</div>
   </div>
 
-  <div class="era-cn" data-from="#t-1949">共和国·现代化征程</div>
-  <div class="era-west" data-from="#t-1949">冷战·全球化·多极化</div>
-  <div class="tick" id="t-1949"><span class="year">1949年</span><span class="era-tag l">新中国成立</span></div>
+  <div class="era-cn" data-start="1949" data-from="#t-1949">共和国·现代化征程</div>
+  <div class="era-west" data-start="1949" data-from="#t-1949">冷战·全球化·多极化</div>
+  <div class="tick" id="t-1949" data-date="1949"><span class="year">1949年</span><span class="era-tag l">新中国成立</span></div>
   <div class="row">
     <div class="card cn"><i class="node"></i>
       <h3>解放战争·中华人民共和国成立 <span class="y">（1946—1949三大战役、渡江战役；1949.10.1开国大典）</span></h3>
@@ -489,7 +496,7 @@
   </div>
 
   <!-- ═══════════ 现代史 ═══════════ -->
-  <div class="tick" id="t-1950"><span class="year">1950年代</span></div>
+  <div class="tick" id="t-1950" data-date="1950"><span class="year">1950年代</span></div>
   <div class="row">
     <div class="card cn"><i class="node"></i>
       <h3>抗美援朝·一五计划·三大改造 <span class="y">（1950-1953；1953-1957；1956年底改造完成）</span></h3>
@@ -500,7 +507,7 @@
       <h3>华约成立·朝鲜战争 <span class="y">（1955.5华约成立，两极格局定型；1950-1953朝鲜战争；1957《罗马条约》欧共体）</span></h3></div>
   </div>
 
-  <div class="tick" id="t-1960"><span class="year">1960年代</span></div>
+  <div class="tick" id="t-1960" data-date="1960"><span class="year">1960年代</span></div>
   <div class="row">
     <div class="card cn"><i class="node"></i>
       <h3>两弹一星·曲折探索 <span class="y">（1964.10.16原子弹；1967氢弹；1970.4.24东方红一号）</span></h3>
@@ -513,7 +520,7 @@
     ⚡ <b>中外联动的转折点</b>：1971.10.25中国恢复联合国合法席位（"乔的笑"）；1972.2尼克松访华签《上海公报》；1972.9中日建交；1979.1.1中美正式建交——中国重返世界舞台。
   </div></div>
 
-  <div class="tick" id="t-1970"><span class="year">1970年代</span></div>
+  <div class="tick" id="t-1970" data-date="1970"><span class="year">1970年代</span></div>
   <div class="row">
     <div class="card cn"><i class="node"></i>
       <h3>重返联合国·中美破冰 <span class="y">（1971.10.25第26届联大；1972.2尼克松访华；1976粉碎"四人帮"）</span></h3>
@@ -523,7 +530,7 @@
       <h3>石油危机·战略调整 <span class="y">（1973石油危机；1979.12苏联入侵阿富汗）</span></h3></div>
   </div>
 
-  <div class="tick" id="t-1978"><span class="year">1978年</span><span class="era-tag l">改革开放</span></div>
+  <div class="tick" id="t-1978" data-date="1978"><span class="year">1978年</span><span class="era-tag l">改革开放</span></div>
   <div class="row">
     <div class="card cn"><i class="node"></i>
       <h3>十一届三中全会·改革开放 <span class="y">（1978.12.18-22；1980设深圳等4个经济特区；1992南方谈话；1992中共十四大确立市场经济体制目标）</span></h3>
@@ -533,7 +540,7 @@
       <h3>信息技术革命·冷战尾声 <span class="y">（1981IBM个人电脑；1989.11柏林墙倒塌）</span></h3></div>
   </div>
 
-  <div class="tick" id="t-1990"><span class="year">1990年代</span></div>
+  <div class="tick" id="t-1990" data-date="1990"><span class="year">1990年代</span></div>
   <div class="row">
     <div class="card cn"><i class="node"></i>
       <h3>香港澳门回归·加入WTO <span class="y">（1997.7.1香港回归；1999.12.20澳门回归；2001.12.11入世）</span></h3>
@@ -542,7 +549,7 @@
       <h3>苏联解体·冷战结束·欧盟 <span class="y">（1991.12.25苏联解体；1993欧盟成立；1995WTO成立；1999欧元启动）</span></h3></div>
   </div>
 
-  <div class="tick" id="t-21c"><span class="year">21世纪初</span></div>
+  <div class="tick" id="t-21c" data-date="2000"><span class="year">21世纪初</span></div>
   <div class="row">
     <div class="card cn"><i class="node"></i>
       <h3>科学发展的十年 <span class="y">（2003杨利伟神舟五号；2008北京奥运；2010上海世博、GDP世界第二）</span></h3>
@@ -551,7 +558,7 @@
       <h3>911·金融危机·移动互联网 <span class="y">（2001.9.11；2008.9全球金融危机；2007iPhone发布）</span></h3></div>
   </div>
 
-  <div class="tick" id="t-now"><span class="year">2012年至今</span><span class="era-tag l">新时代</span></div>
+  <div class="tick" id="t-now" data-date="2012"><span class="year">2012年至今</span><span class="era-tag l">新时代</span></div>
   <div class="row">
     <div class="card cn"><i class="node"></i>
       <h3>中国特色社会主义新时代 <span class="y">（2012.11中共十八大；2013"一带一路"倡议；2017中共十九大；2020全面建成小康社会；2021脱贫攻坚全面胜利；2022中共二十大）</span></h3>
@@ -576,27 +583,154 @@ document.querySelectorAll('.card').forEach((c,i)=>{
   io.observe(c);
 });
 
-// 2) 分期色带定位：桌面端锚定起止刻度；手机端为文档流横条（清除定位）
+// 2) 真实时间比例尺（桌面端）：刻度/内容/色带按 data-date 等比铺开，内容放不下的区间局部膨胀
 const tl=document.querySelector('.timeline');
-function layoutBands(){
+const TICK_GAP=12;   // 刻度胶囊与内容、内容相互之间的最小间距
+const K_MIN=0.25;    // 比例密度下限（px/年），防止极端窄屏时先秦段被压没
+const H_TARGET=15000;// 桌面端整页目标高度（px）：比例密度 k 由它反解，密集区自动膨胀
+
+function layoutTimeline(){
   const isMobile=!window.matchMedia('(min-width:769px)').matches;
-  document.querySelectorAll('.era-cn,.era-west').forEach(b=>{
-    if(isMobile){b.style.top='';b.style.height='';return;}
-    const from=document.querySelector(b.dataset.from);
-    if(!from)return;
-    const to=b.dataset.to?document.querySelector(b.dataset.to):null;
-    const base=tl.getBoundingClientRect().top;
-    const top=from.getBoundingClientRect().top-base;
-    const bottom=to?to.getBoundingClientRect().top-base:tl.scrollHeight;
+  const bands=[...tl.querySelectorAll('.era-cn,.era-west')];
+  const breaks=[...tl.querySelectorAll('.axis-break')];
+
+  // 手机端：清除全部内联定位，回到文档流单列（现状布局）
+  if(isMobile){
+    tl.querySelectorAll('.tick,.row,.link-note').forEach(el=>{
+      el.style.position='';el.style.left='';el.style.right='';
+      el.style.top='';el.style.margin='';el.style.transform='';
+    });
+    bands.forEach(b=>{b.style.top='';b.style.height='';});
+    breaks.forEach(b=>b.remove());
+    tl.style.height='';
+    return;
+  }
+
+  // 按 DOM 顺序把 row/link-note 归属到其前面最近的刻度，收集 data-date
+  const groups=[];let cur=null;
+  for(const el of tl.children){
+    if(el.classList.contains('axis')||el.classList.contains('era-cn')
+      ||el.classList.contains('era-west')||el.classList.contains('axis-break'))continue;
+    if(el.classList.contains('tick')){
+      const d=parseFloat(el.dataset.date);
+      if(isNaN(d)){console.warn('[timeline] 刻度缺少合法 data-date，比例尺布局中止：',el.id);return;}
+      cur={el,date:d,items:[]};groups.push(cur);
+    }else if(cur){cur.items.push(el);}
+  }
+  if(groups.length<2)return;
+  for(let i=1;i<groups.length;i++){
+    if(groups[i].date<=groups[i-1].date){
+      console.warn('[timeline] 刻度 data-date 未按时间递增：',groups[i].el.id);return;
+    }
+  }
+
+  const tickH=groups[0].el.offsetHeight||28;
+  const minDate=groups[0].date;
+  const axisEnd=Math.max(groups[groups.length-1].date,new Date().getFullYear());
+
+  // Pass 1：先测每区间内容需求 need；再解方程 Σmax(span·k, need) + 轴尾 = H_TARGET 求比例密度 k。
+  // f(k)=Σmax(span·k,need) 是 k 的单调不减函数，二分求根即可。k 越小长段越紧凑、膨胀段越多。
+  const segs=[];
+  for(let i=0;i<groups.length-1;i++){
+    const a=groups[i],b=groups[i+1];
+    const span=b.date-a.date;
+    const contentH=a.items.reduce((s,el)=>s+el.offsetHeight,0);
+    const need=tickH+contentH+TICK_GAP*(a.items.length+1);
+    segs.push({a,b,span,need});
+  }
+  const tailSpan=axisEnd-groups[groups.length-1].date;
+  const totalSpan=axisEnd-minDate;
+  // 轴尾内容（最后一个刻度之后的 row/link-note）也有高度需求，必须计入方程
+  const lastG=groups[groups.length-1];
+  const tailNeed=lastG.items.length
+    ?lastG.items.reduce((s,el)=>s+el.offsetHeight+TICK_GAP,0)+tickH
+    :tickH;
+  let lo=K_MIN,hi=Math.max(K_MIN,totalSpan);   // hi=总跨度/年=1 时页高必超 H_TARGET，可作上界
+  const heightAt=k=>segs.reduce((s,g)=>s+Math.max(g.span*k,g.need),0)
+    +Math.max(tailSpan*k,tailNeed);
+  for(let i=0;i<40;i++){
+    const mid=(lo+hi)/2;
+    if(heightAt(mid)>H_TARGET)hi=mid;else lo=mid;
+  }
+  const k=lo;
+  const tailIdeal=tailSpan*k;
+
+  // Pass 2：累加实际高度（膨胀段取 need），写内联 absolute 定位
+  let y=0;
+  segs.forEach(s=>{
+    s.inflated=s.need>s.span*k;
+    s.actual=s.inflated?s.need:s.span*k;
+    s.y0=y;y+=s.actual;s.y1=y;
+  });
+  // 轴尾段：等比理想高度（tailIdeal）至少不小于轴尾内容的实际需求
+  const tailActual=Math.max(tailIdeal,tailNeed);
+  const H=y+tailActual;
+  tl.style.height=H+'px';
+
+  // 定位一个内容项（.row 全宽；.link-note 有 max-width 且被 left:0 钉在左侧，需改用
+  // left:50% + translateX(-50%) 水平居中，否则卡片贴左缘。手机端回退时清除这些内联属性。
+  function placeItem(it,top,linkNote){
+    it.style.position='absolute';
+    it.style.top=top+'px';it.style.margin='0';
+    if(linkNote){it.style.left='50%';it.style.right='auto';it.style.transform='translateX(-50%)';}
+    else{it.style.left='0';it.style.right='0';it.style.transform='';}
+  }
+  segs.forEach(s=>{
+    s.a.el.style.position='absolute';
+    s.a.el.style.left='0';s.a.el.style.right='0';s.a.el.style.top=s.y0+'px';
+    let iy=s.y0+tickH+TICK_GAP;
+    for(const it of s.a.items){
+      placeItem(it,iy,it.classList.contains('link-note'));
+      iy+=it.offsetHeight+TICK_GAP;
+    }
+  });
+  lastG.el.style.position='absolute';
+  lastG.el.style.left='0';lastG.el.style.right='0';
+  lastG.el.style.top=segs[segs.length-1].y1+'px';
+  // 最后一个刻度之后的内容也要定位（属于 lastG 的 items，位于轴尾段）
+  let ly=segs[segs.length-1].y1+tickH+TICK_GAP;
+  for(const it of lastG.items){
+    placeItem(it,ly,it.classList.contains('link-note'));
+    ly+=it.offsetHeight+TICK_GAP;
+  }
+
+  // date→y 映射（分段线性：非膨胀段斜率 k，膨胀段斜率=need/span；轴尾按 k 延伸）
+  function yOfDate(d){
+    if(d<=minDate)return 0;
+    for(const s of segs){
+      if(d<s.b.date)return s.y0+(d-s.a.date)/s.span*(s.y1-s.y0);
+    }
+    const lastSeg=segs[segs.length-1];
+    return lastSeg.y1+(d-lastSeg.b.date)*k;
+  }
+
+  // 色带：直接用自身 data-start/data-end 计算（缺 start 时告警并跳过，不静默失败）
+  bands.forEach(b=>{
+    const start=parseFloat(b.dataset.start),end=parseFloat(b.dataset.end);
+    if(isNaN(start)){console.warn('[timeline] 色带缺少合法 data-start：',b.textContent.trim().slice(0,12));return;}
+    const top=yOfDate(start);
+    const bottom=isNaN(end)?H:yOfDate(end);
     b.style.top=top+'px';
     b.style.height=Math.max(60,bottom-top-8)+'px';
   });
+
+  // 断轴符号：仅在硬溢出（need > 等比高度）的区间中点插入
+  breaks.forEach(b=>b.remove());
+  segs.forEach(s=>{
+    if(!s.inflated)return;
+    const br=document.createElement('div');
+    br.className='axis-break';
+    br.style.top=(s.y0+s.actual/2)+'px';
+    br.textContent='⧗ 此段比例已放大';
+    br.title='该时间段内容较密，纵向按内容撑开，未严格按年等比';
+    tl.appendChild(br);
+  });
 }
-window.addEventListener('load',layoutBands);
-window.addEventListener('resize',layoutBands);
-if(document.fonts&&document.fonts.ready)document.fonts.ready.then(layoutBands);
-if(window.ResizeObserver){new ResizeObserver(layoutBands).observe(tl);}
-layoutBands();
+window.addEventListener('load',layoutTimeline);
+window.addEventListener('resize',layoutTimeline);
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(layoutTimeline);
+if(window.ResizeObserver){new ResizeObserver(layoutTimeline).observe(tl);}
+layoutTimeline();
 </script>
 </body>
 </html>
