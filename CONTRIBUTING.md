@@ -178,7 +178,7 @@ git push -u origin fix/tang-dynasty-date
 
 使用 `type: 中文描述`：
 
-```
+```text
 feat: 补充明朝郑和下西洋细节
 fix: 修正安史之乱结束年份
 docs: 更新贡献指南的年份写法说明
