@@ -100,7 +100,7 @@ print('broken:',[r for r in refs if r not in ids])"
 curl -sS -o /dev/null -w "%{http_code}\n" https://yansheng836.github.io/parallel-histories/
 ```
 
-- 改动史实内容时同步更新 `CHANGELOG.md` 的 `[Unreleased]` 段
+- **改动史实内容时不需要更新 `CHANGELOG.md`。** `[Unreleased]` 段只在正式发布时才整理（本项目尚未发布过版本），日常勘误不往里记
 
 ## 已知待办
 
