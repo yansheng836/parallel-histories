@@ -109,6 +109,7 @@ Use `link-note` **only when the two civilizations actually influenced each other
 
 - `id` convention: `t-` + short slug (`t-tang`, `t-1840`, `t-sui`)
 - `.era-tag.l` renders the label on the left, `.era-tag.r` on the right (desktop only; mobile inlines it)
+- The `data-date` attribute is the authoritative time coordinate for the desktop scale layout (decimal year; negative for BC, e.g. `data-date="-2070"`). **Required for every new tick** — a missing value aborts the scale layout with a console warning
 
 ### Comparison row
 
@@ -131,6 +132,7 @@ One `.row` is one left-right comparison. If only one side has content, a single 
 - `data-to` may be omitted to extend to the end of the timeline
 - `data-from` / `data-to` **must reference existing `id`s**, otherwise the script skips the band
 - `.era-cn` hugs the left edge, `.era-west` the right
+- `data-start` / `data-end` give the band its start/end years on the desktop scale (decimal years; negative for BC). Omitting `data-end` extends the band to the axis end. These coexist with `data-from` / `data-to`, which still drive the mobile document flow
 
 ### Cross-civilization link
 
