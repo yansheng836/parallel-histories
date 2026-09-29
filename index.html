@@ -296,7 +296,7 @@
       屋大维(奥古斯都)前27年开创帝制；耶稣诞生(约前4)、基督教兴起；1-2世纪"罗马和平"。</div>
   </div>
 
-  <div class="link-note"><div class="inner">
+  <div class="link-note" data-date="-138"><div class="inner">
     ⚡ <b>最早的"中外联动"</b>：汉武帝派张骞出使西域（前138、前119两次），开辟<b>丝绸之路</b>，中国丝绸直抵罗马——东西方文明首次直接贸易交流。
   </div></div>
 
@@ -408,7 +408,7 @@
       人类进入"蒸汽时代"，英国成为"世界工厂"。</div>
   </div>
 
-  <div class="link-note"><div class="inner">
+  <div class="link-note" data-date="1839"><div class="inner">
     ⚡ <b>中外联动的转折点</b>：工业革命后的英国急需市场 → 对华走私鸦片 → 林则徐<b>虎门销烟</b>(1839.6) → <b>鸦片战争</b>爆发。中国被强行拖入世界体系，开始沦为半殖民地半封建社会。
   </div></div>
 
@@ -470,7 +470,7 @@
       凡尔登"绞肉机"(1916)；列强放松对华侵略，民族工业"短暂春天"。</div>
   </div>
 
-  <div class="link-note"><div class="inner">
+  <div class="link-note" data-date="1918.5"><div class="inner">
     ⚡ <b>中外联动的转折点</b>：巴黎和会中国外交失败(1919.5，山东权益转日本)→<b>五四运动</b>(1919.5.4)；俄国<b>十月革命</b>(1917.11.7)送来马克思列宁主义→李大钊传播(1918《庶民的胜利》)→1921.7.23<b>中国共产党成立</b>。
   </div></div>
 
@@ -535,7 +535,7 @@
       <h3>古巴导弹危机·越南战争·登月 <span class="y">（1962.10；1964-1973越战；1963马丁·路德·金《我有一个梦想》；1969.7.20阿波罗11号登月）</span></h3></div>
   </div>
 
-  <div class="link-note"><div class="inner">
+  <div class="link-note" data-date="1972"><div class="inner">
     ⚡ <b>中外联动的转折点</b>：1971.10.25中国恢复联合国合法席位（"乔的笑"）；1972.2尼克松访华签《上海公报》；1972.9中日建交；1979.1.1中美正式建交——中国重返世界舞台。
   </div></div>
 
@@ -645,6 +645,9 @@ function layoutTimeline(){
   }
 
   const tickH=groups[0].el.offsetHeight||28;
+  // 刻度元素自带 margin:26px 0，绝对定位（style.top）后 margin 仍生效——
+  // 胶囊可视带顶部 = seg.y0 + marginTop，避让/刻度检测都必须算上这一偏移
+  const TICK_TOP_PAD=parseFloat(getComputedStyle(groups[0].el).marginTop)||0;
   const minDate=groups[0].date;
   const axisEnd=Math.max(groups[groups.length-1].date,new Date().getFullYear());
 
@@ -702,6 +705,32 @@ function layoutTimeline(){
   // left:50% + translateX(-50%) 水平居中，否则卡片贴左缘。手机端回退时清除这些内联属性。
   function placeItem(it,top,linkNote){
     it.style.position='absolute';
+    // .link-note 自带 data-date 时（中外联动的真实交汇年份）锚定到中轴真实高度，
+    // 而不是所属刻度内的堆叠位置——这样与两侧卡片按年份滑动共用同一套尺度，
+    // 后续的卡片避让（下推）才能以它为准，避免节点/卡身压住联动条。
+    if(linkNote){
+      const d=parseFloat(it.dataset.date);
+      if(!isNaN(d)){
+        top=yOfDate(d);
+        // 锚年撞上刻度胶囊（如 note[1839] 锚在 t-1840 胶囊上）时，把 note 推到刻度下方，
+        // 共存不挤。对所有重叠刻度取最大推挤量，单调下推（最多 4 轮已足够）。
+        // 刻度高度统一用布局期已量得的 tickH，不用 offsetHeight（读数时机不稳定）。
+        const noteH=it.offsetHeight;
+        for(let pass=0;pass<4;pass++){
+          let push=0;
+          for(const g of groups){
+            // 刻度可视带：段首 y0（轴尾的最后一个刻度取最后一段的 y1）+ margin 偏移
+            const seg=segs.find(s=>s.a.el===g.el);
+            const gy0=seg?seg.y0:segs[segs.length-1].y1;
+            const ty0=gy0+TICK_TOP_PAD,bottom=ty0+tickH;
+            if(top<bottom+TICK_GAP&&top+noteH>ty0-TICK_GAP)
+              push=Math.max(push,bottom+TICK_GAP);
+          }
+          if(!push)break;
+          top=Math.max(top,push);
+        }
+      }
+    }
     it.style.top=top+'px';it.style.margin='0';
     if(linkNote){it.style.left='50%';it.style.right='auto';it.style.transform='translateX(-50%)';}
     else{it.style.left='0';it.style.right='0';it.style.transform='';}
@@ -779,26 +808,33 @@ function layoutTimeline(){
     }
   });
 
-  // 统一消重叠：两侧卡片按真实年份同队列排序，逐张下推，保证：
-  //   1) 同侧两张卡片同年（「古希腊黑暗时代」与「古希腊城邦·荷马时代」同为前1100）不叠死
-  //   2) 中国侧下移后与西侧卡片不同年相撞（如盛唐转衰 755 vs 法兰克 800 若无重叠）也不叠死
-  //   3) `.link-note` 居中占着中轴一带，卡片虽然左右分栏不与之同行，但纵向落点会盖住它
+  // 消重叠：**左右两栏各自成队**逐张下推。两栏横向永不相交（cn 卡片右缘 556、west 左缘
+  // 708，中间 152px 空档），把两侧串成一条队列会在栏间互相顶，累积后把卡片一路推到
+  // 自己刻度下方一两个刻度之外（时间线错乱）。同栏内仍需保底间距：
+  //   1) 同栏两张卡片同年（「古希腊黑暗时代」与「古希腊城邦·荷马时代」同为前1100）不叠死
+  //   2) 下推后圆点同步下移，连接线仍水平触轴
+  // `.link-note` 居中横跨两栏，对**两栏**都是障碍，故在各自队列里都要避让。
   const WEST_GAP=6;
   const notes=[...tl.querySelectorAll('.link-note')].map(n=>({
-    top:parseFloat(n.style.top)||0,
-    bottom:(parseFloat(n.style.top)||0)+n.offsetHeight
+    top:(parseFloat(n.style.top)||0),h:n.offsetHeight,el:n
   }));
-  const wp=placeCards.map(p=>({...p,h:p.card.offsetHeight}))
-    .sort((a,b)=>a.nodeY-b.nodeY);
-  for(let i=0;i<wp.length;i++){
-    const p=wp[i];
-    let floor=i?wp[i-1].nodeY+wp[i-1].h+WEST_GAP:0;
-    // 卡片实际占据 [nodeY-LINK_T, nodeY-LINK_T+h]——nodeY 是连接点不是顶边，比对必须换算
-    for(const n of notes){
-      if(p.nodeY-LINK_T<n.bottom&&n.top<p.nodeY-LINK_T+p.h)floor=Math.max(floor,n.bottom+LINK_T+WEST_GAP);
+  const wp=placeCards.map(p=>({...p,h:p.card.offsetHeight}));
+  // floor 里必须带 LINK_T——卡片顶边让开 note 之后，20px 连接线仍可能压在 note 上
+  function resolveColumn(list){
+    list.sort((a,b)=>a.nodeY-b.nodeY);
+    for(let i=0;i<list.length;i++){
+      const p=list[i];
+      let ny=p.nodeY;
+      if(i)ny=Math.max(ny,list[i-1].nodeY+list[i-1].h+WEST_GAP);
+      // 卡片实际占据 [ny-LINK_T, ny-LINK_T+h]——ny 是连接点不是顶边，比对必须换算
+      for(const n of notes){
+        if(ny-LINK_T<n.top+n.h&&n.top<ny-LINK_T+p.h)ny=Math.max(ny,n.top+n.h+LINK_T+WEST_GAP);
+      }
+      if(ny>p.nodeY)p.nodeY=ny;   // 推下去后连接点同步下移，线仍然水平触轴
     }
-    if(p.nodeY<floor)p.nodeY=floor;   // 推下去后连接点同步下移，线仍然水平触轴
   }
+  resolveColumn(wp.filter(p=>p.side==='cn'));
+  resolveColumn(wp.filter(p=>p.side==='west'));
   // .card 本身已是 position:relative，只挪 top 即可——横向位置/宽度交给 flex，
   // 改成 absolute 会让它失去 flex 定位而落到容器左缘（蓝色卡片跑到左边）。
   wp.forEach(p=>{
@@ -822,13 +858,20 @@ function layoutTimeline(){
     b.style.height=Math.max(60,bottom-top-8)+'px';
   });
 
-  // 断轴符号：仅在硬溢出（need > 等比高度）的区间中点插入
+  // 断轴符号：仅在硬溢出（need > 等比高度）的区间中点插入；若中点落在 `.link-note`
+  // 带上（note 刚被同年份锚定下来，恰好在段中），把符号挪到 note 之下，避免文字相叠
   breaks.forEach(b=>b.remove());
+  const noteBandsDom=[...tl.querySelectorAll('.link-note')].map(n=>({
+    top:parseFloat(n.style.top)||0,bottom:(parseFloat(n.style.top)||0)+n.offsetHeight}));
   segs.forEach(s=>{
     if(!s.inflated)return;
     const br=document.createElement('div');
     br.className='axis-break';
-    br.style.top=(s.y0+s.actual/2)+'px';
+    let top=s.y0+s.actual/2;
+    for(const n of noteBandsDom){
+      if(top>n.top-4&&top<n.bottom+4)top=n.bottom+6;
+    }
+    br.style.top=top+'px';
     br.textContent='⧗ 此段比例已放大';
     br.title='该时间段内容较密，纵向按内容撑开，未严格按年等比';
     tl.appendChild(br);

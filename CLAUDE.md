@@ -45,7 +45,11 @@ bad=[(a,c) for a,c in bands if c and float(c)<float(a)]
 print('bands:',len(bands),'invalid start>end:',bad)"
 ```
 
-提交前需要在**桌面端 1280px** 和**手机端 375px** 两种宽度下各看一遍。
+**提交前必做三项**：
+
+1. 上面两个结构自检（色带引用、`data-date` 合法性）输出无异常；
+2. **在 1280px 下跑「时序不变量自检」**（脚本见「时序不变量与自检」一节），必须输出 `0 处`——改过任何布局逻辑时尤其不可省，这是唯一能抓出「时间线错乱」的检查；
+3. 在**桌面端 1280px** 和**手机端 375px** 两种宽度下各目视一遍。
 
 ## 架构
 
@@ -61,7 +65,7 @@ print('bands:',len(bands),'invalid start>end:',bad)"
 | `.tick` | 时间刻度（中间的年份胶囊），带 `id` 供色带引用；`data-date` 提供该刻度的真实年份 | `data-date` |
 | `.row` | 一组左右对照，内含 `.card.cn` + `.card.west` | — |
 | `.card.west` | 右栏西方卡片；`data-date` 提供**该西方事件自己的年份**（供桌面端把卡片和中轴连接点摆到真实年份） | `data-date` |
-| `.link-note` | 「中外联动」卡片，独立居中，标记两个文明真正交汇的节点 | — |
+| `.link-note` | 「中外联动」卡片，独立居中，标记两个文明真正交汇的节点 | `data-date`（该联动节点的真实年份） |
 
 一个 `.tick` 可以跟多个 `.row`（表示同一时期的多个事件）。`.row` 内某一侧可以没有对应内容。
 
@@ -111,9 +115,45 @@ print('bands:',len(bands),'invalid start>end:',bad)"
 
 1. `.card` 本身已是 `position:relative`，JS **只写 `top`，不写 `position:absolute`**。改成 absolute 会让卡片失去 flex 定位而落到容器左缘（表现为「蓝色卡片跑到左边」），宽度和左右分栏也都由 flex 负责。
 2. `top` 是相对所属 `.row` 的偏移（`.row` 自身是 absolute），且要用 **`offsetTop` 口径**换算。**不要用 `getBoundingClientRect()`**——入场动画的 `translateY(16px)` 会计入 rect，导致 16px 的系统性偏移。
-3. **统一消重叠**：两侧卡片放进同一个队列按年份排序、逐张下推（`WEST_GAP` 保底间距），与已定位的 `.link-note` 相交时整体让到它下面。**推下去后圆点同步下移**，连线仍然水平触轴。**单调性校验必须分同一侧**，不要把「一行内中国侧晚于西侧」误判成倒序。
+3. **消重叠必须按栏独立**：两侧卡片**各自成队**逐张下推（`resolveColumn()`，`WEST_GAP` 保底间距）。因为两栏横向永不相交（cn 卡片右缘 556、west 左缘 708，中间 152px 空档），把两侧串成一条队列会**跨栏互相顶**，累积后把卡片一路推到自己刻度下方一两个刻度之外——表现为「时间线错乱」（如「解放战争·中华人民共和国成立」跑到「1960年代」下面）。**推下去后圆点同步下移**，连线仍然水平触轴。**单调性校验必须分同一侧**，不要把「一行内中国侧晚于西侧」误判成倒序。
 
-**刻度与分期色带不动**：刻度胶囊仍按刻度年（`t-tang`=618），色带仍按 `data-start`/`data-end` 锚定刻度。实测：33 张中国侧卡片只有 10 张需要移动（最大偏移盛唐转衰 +137 年），其余 23 张年份 = 刻度年、视觉无变化。
+> 曾经的错误写法（**勿用**）：把 `placeCards` 直接 `.sort()` 成一条队列，用 `wp[i-1]` 当保底间距。`wp[i-1]` 可能是另一侧的卡片，于是产生跨栏下推。HEAD 版本就有这个缺陷（22 处卡片越过下一个刻度、最大 201px），把 `.link-note` 下移后放大到 28 处 / 659px。按栏独立后为 0 处。
+
+### 时序不变量与自检（改任何布局逻辑后必跑）
+
+**不变量：每张卡片必须落在「它所属刻度的 y」与「下一个刻度的 y」之间。** 违反即**时间线错乱**——肉眼表现为「1949 年成立的卡片跑到『1960年代』刻度下面」。这不是样式瑕疵，是**内容时序被破坏**，比层叠严重得多，**当阻断性缺陷处理**。
+
+**事故机理（务必记住）**：卡片消重叠把左右两栏排进**同一条队列**逐张下推。两栏横向永不相交（cn 右缘 556、west 左缘 708，中间 152px 空档），跨栏下推纯属无谓，而且会**累积传染**——一张被推下去，就把后面每张都顶下去，链条越长放大越多。所以这类 bug 的特征是「一次错位一片」，而不是单点。
+
+**改完 `layoutTimeline()` 的下推 / 锚定 / 比例尺逻辑后，必须在 1280px 下跑这段自检，输出必须为 `0 处`**（浏览器控制台粘贴）：
+
+```js
+(()=>{const tl=document.querySelector('.timeline');const B=e=>{let y=0,a=e;while(a&&a!==tl){y+=a.offsetTop;a=a.offsetParent}return Math.round(y)};
+const T=[...tl.querySelectorAll('.tick')].map(t=>({id:t.id,d:+t.dataset.date,y:B(t)}));
+const ix=Object.fromEntries(T.map((t,i)=>[t.id,i]));const bad=[];
+for(const c of tl.querySelectorAll('.row .card')){const r=c.closest('.row');let p=r.previousElementSibling,tp=null;while(p&&p!==tl){if(p.classList.contains('tick')){tp=p;break}p=p.previousElementSibling}if(!tp)continue;const nx=T[ix[tp.id]+1];if(nx&&B(c)>nx.y)bad.push((c.querySelector('h3')?.textContent||'').replace(/\s+/g,' ').slice(0,18)+' 越过 '+nx.id+'+'+(B(c)-nx.y)+'px')}
+for(let i=1;i<T.length;i++)if(T[i].d<=T[i-1].d||T[i].y<=T[i-1].y)bad.push('刻度倒序 '+T[i].id);
+console.log('时间线时序问题:',bad.length+' 处',bad)})()
+```
+
+同一段代码在**未修复的旧版**上会输出 `22 处`，含 `解放战争·中华人民共和国成立 … 越过 t-1950+67px`——可用它确认自检逻辑本身有效。
+
+**为什么不能写进上面那段 Python 自检**：卡片的 y 是**运行时算出来的**（比例尺反解 + 逐张下推），HTML 静态文本里根本没有；必须等页面真正渲染完（`load` 与 `document.fonts.ready` 之后）才能量。同理，`grep` 也查不出来。
+
+
+### `.link-note` 的真实年份锚定与避让（桌面端）
+
+`.link-note` 也必须写 `data-date`（该联动节点的真实年份，如虎门销烟 `1839`、巴黎和会 `1919`）。**不写会被跳过锚定**：它会退回「所属刻度内的堆叠位置」——那是它压住上下卡片的根因（历史上「工业革命后」压住「第一次工业革命」、「巴黎和会」压住「辛亥革命」都是这么来的）。
+
+三条实现要点：
+
+1. **锚定**：有 `data-date` 的 note 在 `placeItem()` 里用 `yOfDate(date)` 直接落在中轴真实高度，与两侧卡片共用同一套年份尺度——不是按刻度堆叠。缺 `data-date` 时退回堆叠位置（不 warn，与 `.card.cn` 的模糊年代同一策略）。
+2. **避让刻度胶囊**：note 锚到的年份常与某刻度同年（`1839`→`t-1840`、`1919`→`t-1919`），会正好压在胶囊上。`placeItem()` 里对所有重叠刻度取最大推挤量、最多 4 轮把 note 推到胶囊下方。**刻度可视带必须加上 `.tick` 的 `margin:26px 0`**（绝对定位后 margin 仍生效，可视顶边 = `seg.y0 + marginTop`）——用裸 `seg.y0` 会永远少算 26px 而判不出重叠，这是踩过的坑。
+3. **卡片避让 note**：两条栏队列里都读 note 的最终 `top`（`placeItem` 已写入）作为障碍带，`floor` 取 `note.bottom + LINK_T + WEST_GAP`（**要加 `LINK_T`**，否则卡片顶边让开了、20px 连接线还压在 note 上）。**`.link-note` 居中横跨两栏（x 352–912），对左右两栏都是障碍**，两栏都要避让。
+
+`.axis-break`（「⧗ 此段比例已放大」）默认插在膨胀段中点，若落在 note 带上会被推下去，避免文字相叠。
+
+**刻度与分期色带不动**：刻度胶囊仍按刻度年（`t-tang`=618），色带仍按 `data-start`/`data-end` 锚定刻度。
 
 ### 分期色带的手机端行为
 
@@ -161,6 +201,20 @@ curl -sS -o /dev/null -w "%{http_code}\n" https://yansheng836.github.io/parallel
 ```
 
 - **改动史实内容时不需要更新 `CHANGELOG.md`。** `[Unreleased]` 段只在正式发布时才整理（本项目尚未发布过版本），日常勘误不往里记
+
+### 用户报「线上还是坏的」时，先确认线上版本
+
+本项目**改的是 `index.html`，而线上是 GitHub Pages**。修复只写在工作区、没有 commit/push 时，线上跑的还是旧版——用户会看到「修复没生效」。
+
+```bash
+# 确认线上是否已包含你的修复（把标记换成你改动里的独有标识）
+curl -sS https://yansheng836.github.io/parallel-histories/ | grep -c 'resolveColumn'
+# 顺便确认本地有无未提交/未推送的改动
+git status --short && git log origin/main..HEAD --oneline
+```
+
+**这条踩过一次**：用户报「时间线错乱没修好」，实测发现工作区早已修好（时序自检 0 处），但改动从未提交，线上仍是 HEAD 旧版（时序自检 22 处）。差点误判成代码仍有 bug 而重复返工。<br>
+排查顺序应为：**先量当前工作区 → 再量线上 → 两者不一致就是「没发布」，不是「没修好」**。
 
 ## 已知待办
 
